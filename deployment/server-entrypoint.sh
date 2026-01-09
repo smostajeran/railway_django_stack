@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 echo "Collecting static files.."
 python manage.py collectstatic --noinput
@@ -12,9 +13,11 @@ if [ "$RUN_MIGRATIONS" = "True" ]; then
     done
 fi
 
-echo "Starting app server..."
+PORT=${PORT:-8000}
+
+echo "Starting app server on PORT=$PORT ..."
 python -m gunicorn railway_django_stack.wsgi:application \
-    --bind 0.0.0.0:8000 \
+    --bind 0.0.0.0:$PORT \
     --log-level info \
     --config python:deployment.gunicorn_config \
     --forwarded-allow-ips "*"
